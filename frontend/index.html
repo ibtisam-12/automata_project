@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automata Malware Detector | Advanced Pattern Recognition</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Animation -->
+    <div class="background-animation">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>Automata Malware Detector</h1>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Signatures</span>
+                    <span class="stat-value" id="signaturesCount">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Status</span>
+                    <span class="stat-value status-indicator" id="statusIndicator">
+                        <span class="status-dot"></span>
+                        <span id="statusText">Loading...</span>
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <section class="upload-section glass-card">
+                <h2 class="section-title">
+                    <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Scan File for Malware
+                </h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" accept=".txt,.py,.sh,.js,.java,.cpp,.c,.html,.css,.php,.rb" hidden>
+                    <div class="upload-content">
+                        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M7 18a4.6 4.4 0 01 0 -9 5 4.5 0 011 1h1a3.5 3.5 0 010 7h-1M9 15l3-3m0 0l3 3m-3-3v12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p class="upload-text">Drop your file here or <span class="upload-link">browse</span></p>
+                        <p class="upload-hint">Supported: .py, .sh, .js, .java, .cpp, .txt (Max 16MB)</p>
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M13 2v7h7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <div class="file-details">
+                            <p class="file-name" id="fileName"></p>
+                            <p class="file-size" id="fileSize"></p>
+                        </div>
+                        <button class="btn-remove" id="btnRemove">×</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" id="btnScan" disabled>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span id="btnScanText">Scan for Malware</span>
+                </button>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section glass-card" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2 class="section-title">
+                        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Scan Results
+                    </h2>
+                    <div class="risk-badge" id="riskBadge">
+                        <span class="risk-level" id="riskLevel">SAFE</span>
+                    </div>
+                </div>
+
+                <div class="results-summary">
+                    <div class="summary-item">
+                        <span class="summary-label">File</span>
+                        <span class="summary-value" id="scannedFileName">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Lines</span>
+                        <span class="summary-value" id="totalLines">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Matches Found</span>
+                        <span class="summary-value" id="matchesFound">-</span>
+                    </div>
+                </div>
+
+                <div class="matches-container" id="matchesContainer">
+                    <!-- Matches will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Signatures Section -->
+            <section class="signatures-section glass-card">
+                <h2 class="section-title">
+                    <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Loaded Signatures
+                </h2>
+                <div class="signatures-grid" id="signaturesGrid">
+                    <!-- Signatures will be loaded here -->
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Built with Automata Theory | RE → NFA → DFA → Pattern Matching</p>
+            <p class="footer-tech">Django REST Framework + Vanilla JavaScript</p>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Scanning file...</p>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
