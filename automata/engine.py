@@ -30,12 +30,35 @@ def compile_signatures(sig_map: Dict[str, str]) -> List[CompiledSignature]:
 
 def scan_text_lines(compiled: List[CompiledSignature], lines: List[str]) -> List[Match]:
     findings: List[Match] = []
-    for idx, line in enumerate(lines, start=1):
-        line = line.rstrip("\n")
-        for sig in compiled:
-            findings.extend(dfa_find_all(sig.dfa, line, sig.name, sig.regex, idx))
-    return findings
 
+    for idx, raw_line in enumerate(lines, start=1):
+        line = raw_line.rstrip("\n")
+
+        # Remove inline comments (# or //)
+        for comment_marker in ("#", "//"):
+            if comment_marker in line:
+                line = line.split(comment_marker, 1)[0]
+
+        # Trim whitespace after comment removal
+        line = line.strip()
+
+        # Skip empty or fully commented lines
+        if not line:
+            continue
+
+        # Scan remaining code
+        for sig in compiled:
+            findings.extend(
+                dfa_find_all(
+                    sig.dfa,
+                    line,
+                    sig.name,
+                    sig.regex,
+                    idx,
+                )
+            )
+
+    return findings
 
 def scan_file(compiled: List[CompiledSignature], path: str, encoding: str = "utf-8") -> Tuple[List[str], List[Match]]:
     with open(path, "r", encoding=encoding, errors="replace") as f:
